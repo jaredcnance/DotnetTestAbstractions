@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <NetCoreAppVersion>netcoreapp2.1</NetCoreAppVersion>
+    <NetStandardVersion>netstandard2.0</NetStandardVersion>
+    <DependencyInjectionVersion>2.1.1</DependencyInjectionVersion>
+    <TestHostVersion>2.1.1</TestHostVersion>
+    <EFCoreVersion>2.1.1</EFCoreVersion>
+    <JsonVersion>11.0.2</JsonVersion>
+    <AutofacVersion>4.8.1</AutofacVersion>
+    <AutofacExtensionVersion>4.2.2</AutofacExtensionVersion>
+  </PropertyGroup>
+
+  <!-- Test Project Deps -->
+  <PropertyGroup>
+    <TestSdkVersion>15.7.0</TestSdkVersion>
+    <XUnitVersion>2.3.1</XUnitVersion>
+    <MoqVersion>4.7.99</MoqVersion>
+  </PropertyGroup>
+
+  <!-- Example Project Deps -->
+  <PropertyGroup>
+    <EFCoreVersion>2.1.1</EFCoreVersion>
+  </PropertyGroup>
+
+</Project>
