@@ -2,6 +2,11 @@
 
 Provides a set of abstractions for improving the performance and DX when writing integration tests.
 
+## Usage
+
+See the [Examples](https://github.com/jaredcnance/DotnetTestAbstractions/tree/master/examples/WebApp.Tests)
+for usage details.
+
 ### Write Easy to Read Tests Without Worrying About Leaky State
 
 ```csharp
@@ -23,6 +28,12 @@ public class ArticlesController_Tests : JsonServerFixture<TestStartup, AppContex
     }
 }
 ```
+
+## Features
+
+- Management of `TestServer` instances
+- Database calls get wrapped in a transaction that is shared between the test and server
+- Easy to use APIs for executing RESTful JSON HTTP requests
 
 # Development
 
