@@ -27,6 +27,7 @@ artifacts:
 - path: .\**\artifacts\**\*.nupkg
   name: NuGet
 
+deploy:
 - provider: NuGet
   name: production
   skip_symbols: false
