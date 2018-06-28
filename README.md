@@ -34,6 +34,7 @@ public class ArticlesController_Tests : JsonServerFixture<TestStartup, AppContex
 - Management of `TestServer` instances
 - Database calls get wrapped in a transaction that is shared between the test and server
 - Easy to use APIs for executing RESTful JSON HTTP requests
+- Reset the database before any tests run by setting the environment variable `DROP_DATABASE_ONSTART=true`
 
 # Development
 
