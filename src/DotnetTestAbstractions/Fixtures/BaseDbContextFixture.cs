@@ -19,6 +19,7 @@ namespace DotnetTestAbstractions.Fixtures
             {
                 lock (_dbCreatedLock)
                 {
+                    DropDatabase(dbContext);
                     CreateDatabase(dbContext);
                     _databaseIsCreated = true;
                 }
@@ -32,6 +33,23 @@ namespace DotnetTestAbstractions.Fixtures
         /// </summary>
         protected virtual void CreateDatabase(TContext dbContext)
             => dbContext.Database.EnsureCreated();
+
+        /// <summary>
+        /// Drops the database prior to starting the test.
+        /// </summary>
+        protected virtual void DropDatabase(TContext dbContext)
+        {
+            if (ShouldDropDatabase())
+                dbContext.Database.EnsureDeleted();
+        }
+
+        /// <summary>
+        /// Whether or not to drop the database before tests run.
+        /// By default, this only happens if the environment variable
+        /// DROP_DATABASE_ONSTART == true
+        /// </summary>
+        protected virtual bool ShouldDropDatabase()
+            => Environment.GetEnvironmentVariable("DROP_DATABASE_ONSTART") == "true";
 
         public virtual void Dispose() { }
     }

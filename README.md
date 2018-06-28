@@ -4,7 +4,8 @@ Provides a set of abstractions for improving the performance and DX when writing
 
 ## Pre-Requisites
 
-Need a running SQL Server on localhost. You can do this 
+Need a running SQL Server on localhost. 
+You can do this by pulling the SQL Server docker container:
 
 ```
 docker run \

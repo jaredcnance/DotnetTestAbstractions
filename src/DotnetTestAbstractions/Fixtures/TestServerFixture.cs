@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Net.Http;
 using DotnetTestAbstractions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -17,7 +15,6 @@ namespace DotnetTestAbstractions.Fixtures
         private ServiceScope _testScope;
         private IServiceProvider _services;
         private TestServer _currentServer;
-        private static ConcurrentDictionary<Type, TestServer> _servers = new ConcurrentDictionary<Type, TestServer>();
 
         public TestServerFixture()
         {
@@ -39,25 +36,10 @@ namespace DotnetTestAbstractions.Fixtures
         /// </param>
         protected void SetupScopedServer(bool forceRefresh = false)
         {
-            _currentServer = GetOrCreateServer();
+            _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh);
             Client = _currentServer.CreateClient();
             _testScope = AsyncLocalServiceScopeFactory<TStartup>.CreateAmbientScope();
             _services = _testScope.ServiceProvider;
-        }
-
-        private TestServer GetOrCreateServer(bool forceRefresh = false)
-        {
-            var startupType = typeof(TStartup);
-            if (_servers.TryGetValue(startupType, out var server) && forceRefresh == false)
-                return server;
-
-            var builder = new WebHostBuilder()
-                .UseStartup<TStartup>();
-
-            var newServer = new TestServer(builder);
-            _servers[startupType] = (newServer);
-
-            return newServer;
         }
 
         private void SetupDatabase()

@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;using System;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using WebApp;
 using WebApp.Articles;
 using AppContext = WebApp.Data.AppContext;
 using Xunit;
@@ -10,7 +9,7 @@ using DotnetTestAbstractions.Fixtures;
 
 namespace WebApp.Tests
 {
-    public class ArticlesController_Tests 
+    public class ArticlesController_Tests
         : JsonServerFixture<TestStartup, AppContext>
     {
         [Fact]
@@ -43,7 +42,7 @@ namespace WebApp.Tests
             Assert.NotNull(resultArticle);
             Assert.Equal(article.Id, resultArticle.Id);
         }
-        
+
         [Fact]
         public async Task Can_Create_Articles()
         {
@@ -58,7 +57,7 @@ namespace WebApp.Tests
             var persistedArticle = await DbContext.Articles.FindAsync(resultArticle.Id);
             Assert.NotNull(persistedArticle);
         }
-        
+
         [Fact]
         public async Task Can_Create_And_Get_Articles()
         {
@@ -68,7 +67,7 @@ namespace WebApp.Tests
             // act
             var articlePostResult = await PostAsync("articles", article);
             var articleGetResult = await GetAsync<Article>($"articles/{articlePostResult.Id}");
-            
+
             // assert
             Assert.NotNull(articlePostResult);
             Assert.NotNull(articleGetResult);

@@ -11,11 +11,9 @@ namespace DotnetTestAbstractions.DependencyInjection
 
     public static class StartupConventionLoader
     {
-        public static TField GetStaticField<TStartup, TField>(string fieldName) where TField : class
+        public static TField GetStaticField<TField>(Type startupClass, string fieldName) where TField : class
         {
             // TODO: cache field lookup
-            var startupClass = typeof(TStartup);
-
             PropertyInfo property = startupClass.GetProperty(fieldName, BindingFlags.Public | BindingFlags.Static);
             if (property == null)
                 throw new InvalidOperationException($"Type '{startupClass}' does not contain a member named '{fieldName}'");

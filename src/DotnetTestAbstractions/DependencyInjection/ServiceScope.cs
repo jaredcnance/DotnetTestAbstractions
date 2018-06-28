@@ -4,17 +4,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotnetTestAbstractions.DependencyInjection
 {
-    public class ServiceScope : IServiceScope
+    public class ServiceScope : IServiceScope, IServiceProvider
     {
+        private readonly ILifetimeScope _lifetimeScope;
+
         public ServiceScope(ILifetimeScope lifetimeScope)
         {
             _lifetimeScope = lifetimeScope;
-            ServiceProvider = new ScopedServiceProvider(lifetimeScope);
+            ServiceProvider = this;
         }
 
-        private readonly ILifetimeScope _lifetimeScope;
-
         public IServiceProvider ServiceProvider { get; }
+        public object GetService(Type serviceType) => _lifetimeScope.Resolve(serviceType);
+        public ServiceScope CreateChildScope() => new ServiceScope(_lifetimeScope.BeginLifetimeScope());
 
         /// <summary>
         /// This method is a no-op to prevent the test app from disposing the 
