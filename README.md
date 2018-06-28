@@ -2,7 +2,7 @@
 
 Provides a set of abstractions for improving the performance and DX when writing integration tests.
 
-### Write Easy to Read Tests w/o Worrying About Leaky State
+### Write Easy to Read Tests Without Worrying About Leaky State
 
 ```csharp
 public class ArticlesController_Tests : JsonServerFixture<TestStartup, AppContext>
