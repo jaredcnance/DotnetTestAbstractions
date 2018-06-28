@@ -1,0 +1,37 @@
+version: '{build}'
+os: Visual Studio 2017
+
+environment:
+  Data:DefaultConnection: "Server=(local)\SQL2017;Database=master;User ID=sa;Password=Password12!"
+
+branches:
+  only:
+  - master
+
+nuget:
+  disable_publish_on_pr: true
+
+services:  
+  - mssql2017
+
+pull_requests:
+  do_not_increment_build_number: true
+
+build_script:
+- ps: dotnet --version
+- ps: .\build.ps1
+
+test: off
+
+artifacts:
+- path: .\**\artifacts\**\*.nupkg
+  name: NuGet
+
+- provider: NuGet
+  name: production
+  skip_symbols: false
+  api_key:
+    secure: /fsEOgG4EdtNd6DPmko9h3NxQwx1IGDcFreGTKd2KA56U2KEkpX/L/pCGpCIEf2s
+  on:
+    branch: master
+    appveyor_repo_tag: true

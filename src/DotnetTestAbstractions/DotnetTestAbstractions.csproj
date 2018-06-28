@@ -9,6 +9,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="$(AutofacExtensionVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(TestHostVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(DependencyInjectionVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonVersion)" />
   </ItemGroup>

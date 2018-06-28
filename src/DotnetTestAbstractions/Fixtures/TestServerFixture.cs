@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using DotnetTestAbstractions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -34,9 +35,12 @@ namespace DotnetTestAbstractions.Fixtures
         /// Recreate the server and services even if it exists in cache already.
         /// The cached instance will be replaced with the new one.
         /// </param>
-        protected void SetupScopedServer(bool forceRefresh = false)
+        /// <param name="configureBuilder">
+        /// Use this to override the default WebHost configuration.
+        /// </param>
+        protected void SetupScopedServer(bool forceRefresh = false, Action<WebHostBuilder> configureBuilder = null)
         {
-            _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh);
+            _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh, configureBuilder);
             Client = _currentServer.CreateClient();
             _testScope = AsyncLocalServiceScopeFactory<TStartup>.CreateAmbientScope();
             _services = _testScope.ServiceProvider;

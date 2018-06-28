@@ -11,18 +11,26 @@ using AppContext = WebApp.Data.AppContext;
 
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace WebApp
 {
     public class Startup
     {
+        private readonly IConfiguration _config;
+
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
+
         public static IContainer Container { get; private set; }
 
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             services.AddSingleton(new DbContextOptionsBuilder<AppContext>()
-                    .UseSqlServer("Server=localhost; Database=WebApp; User Id=sa; Password=P@ssword1;MultipleActiveResultSets=True")
+                    .UseSqlServer(_config["Data:DefaultConnection"])
                     .Options);
 
             services.AddScoped<AppContext>();
