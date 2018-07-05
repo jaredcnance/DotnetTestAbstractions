@@ -32,7 +32,11 @@ namespace DotnetTestAbstractions.Fixtures
         /// If you need to use migrations, you should override this method.
         /// </summary>
         protected virtual void CreateDatabase(TContext dbContext)
-            => dbContext.Database.EnsureCreated();
+        {
+            Console.WriteLine(">>>> Creating Database...");
+            dbContext.Database.EnsureCreated();
+            Console.WriteLine(">>>> Database Created.");
+        }
 
         /// <summary>
         /// Drops the database prior to starting the test.
