@@ -35,4 +35,4 @@ deploy:
     secure: /fsEOgG4EdtNd6DPmko9h3NxQwx1IGDcFreGTKd2KA56U2KEkpX/L/pCGpCIEf2s
   on:
     branch: master
-    appveyor_repo_tag: true
+    appveyor_repo_tag: false
