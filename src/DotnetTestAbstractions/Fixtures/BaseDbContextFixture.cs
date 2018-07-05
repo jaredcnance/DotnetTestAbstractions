@@ -31,12 +31,8 @@ namespace DotnetTestAbstractions.Fixtures
         /// By default, this will use <c>EnsureCreated</c>.
         /// If you need to use migrations, you should override this method.
         /// </summary>
-        protected virtual void CreateDatabase(TContext dbContext)
-        {
-            Console.WriteLine(">>>> Creating Database...");
-            dbContext.Database.EnsureCreated();
-            Console.WriteLine(">>>> Database Created.");
-        }
+        protected virtual void CreateDatabase(TContext dbContext) 
+            => dbContext.Database.EnsureCreated();
 
         /// <summary>
         /// Drops the database prior to starting the test.
