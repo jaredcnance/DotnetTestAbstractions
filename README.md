@@ -1,6 +1,6 @@
 # DotnetTestAbstractions
 
-![NuGet Pre Release](https://img.shields.io/nuget/vpre/DotnetTestAbstractions.svg)
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/DotnetTestAbstractions.svg)](https://www.nuget.org/packages/DotnetTestAbstractions)
 [![Build status](https://ci.appveyor.com/api/projects/status/4wb49yoo3c5xrfuj?svg=true)](https://ci.appveyor.com/project/jaredcnance/dotnettestabstractions)
 
 
