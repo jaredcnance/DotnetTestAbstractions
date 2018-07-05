@@ -2,9 +2,10 @@
   <PropertyGroup>
     <NetCoreAppVersion>netcoreapp2.1</NetCoreAppVersion>
     <NetStandardVersion>netstandard2.0</NetStandardVersion>
-    <DependencyInjectionVersion>2.1.1</DependencyInjectionVersion>
-    <TestHostVersion>2.1.1</TestHostVersion>
-    <EFCoreVersion>2.1.1</EFCoreVersion>
+    <ConfigurationVersion>2.1.0</ConfigurationVersion>
+    <DependencyInjectionVersion>2.1.0</DependencyInjectionVersion>
+    <TestHostVersion>2.1.0</TestHostVersion>
+    <EFCoreVersion>2.1.0</EFCoreVersion>
     <JsonVersion>11.0.2</JsonVersion>
     <AutofacVersion>4.8.1</AutofacVersion>
     <AutofacExtensionVersion>4.2.2</AutofacExtensionVersion>
@@ -19,7 +20,8 @@
 
   <!-- Example Project Deps -->
   <PropertyGroup>
-    <EFCoreVersion>2.1.1</EFCoreVersion>
+    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
+    <EFCoreVersion>2.1.0</EFCoreVersion>
   </PropertyGroup>
 
 </Project>
