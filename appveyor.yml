@@ -2,7 +2,7 @@ version: '{build}'
 os: Visual Studio 2017
 
 environment:
-  Data:DefaultConnection: "Server=(local)\\SQL2017;Database=master;User ID=sa;Password=Password12!"
+  Data:DefaultConnection: "Server=(local)\\SQL2017;Database=WebAppTests;User ID=sa;Password=Password12!"
 
 branches:
   only:
