@@ -34,18 +34,18 @@ If ($env:APPVEYOR_REPO_TAG -eq $true) {
 
     IF ([string]::IsNullOrWhitespace($revision)) {
         Write-Output "RUNNING dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts"
-        dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts
+        dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --include-symbols
         CheckLastExitCode
     }
     Else {
         Write-Output "RUNNING dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --version-suffix=$revision"
-        dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --version-suffix=$revision 
+        dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --version-suffix=$revision --include-symbols
         CheckLastExitCode
     }
 }
 Else { 
     Write-Output "VERSION-SUFFIX: alpha1-$revision"
     Write-Output "RUNNING dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --version-suffix=alpha1-$revision"
-    dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --version-suffix=alpha1-$revision 
+    dotnet pack .\src\DotnetTestAbstractions -c Release -o .\artifacts --version-suffix=alpha1-$revision --include-symbols
     CheckLastExitCode
 }
