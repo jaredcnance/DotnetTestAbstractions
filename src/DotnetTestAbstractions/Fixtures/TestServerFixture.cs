@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Collections.Generic;
 
 namespace DotnetTestAbstractions.Fixtures
 {
@@ -42,9 +43,21 @@ namespace DotnetTestAbstractions.Fixtures
         {
             _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh, configureBuilder);
             Client = _currentServer.CreateClient();
-            _testScope = AsyncLocalServiceScopeFactory<TStartup>.CreateAmbientScope();
+            _testScope = AsyncLocalServiceScopeFactory<TStartup>.CreateAmbientScope(GetAmbientTypes());
             _services = _testScope.ServiceProvider;
         }
+
+        protected ServiceScope CreateRequestScope()
+            => AsyncLocalServiceScopeFactory<TStartup>.CreateChildScope();
+
+
+        /// <summary>
+        /// List of types that when requested should be resolved from the ambient scope
+        /// instead of the child scope. These should be interfaces of instances that need to be shared
+        /// between the test and the web application.
+        /// </summary>
+        protected virtual Dictionary<Type, Type> GetAmbientTypes()
+            => new Dictionary<Type, Type> { { typeof(TContext), typeof(TContext) } };
 
         private void SetupDatabase()
         {
