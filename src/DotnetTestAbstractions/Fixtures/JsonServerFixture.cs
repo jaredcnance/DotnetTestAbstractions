@@ -21,7 +21,10 @@ namespace DotnetTestAbstractions.Fixtures
 
         protected async Task<T> GetAsync<T>(string requestUri, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
         {
+            var scope = CreateRequestScope();
             var response = await Client.GetAsync(requestUri);
+            scope.ActuallyDispose();
+
             if (response.StatusCode != expectedStatusCode)
                 throw new DotnetTestAbstractionsFixtureException($"{nameof(GetAsync)} received '{response.StatusCode}' but expected '{expectedStatusCode}'");
 
@@ -37,7 +40,11 @@ namespace DotnetTestAbstractions.Fixtures
             var json = JsonConvert.SerializeObject(resource);
             var content = new StringContent(json);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            var scope = CreateRequestScope();
             var response = await Client.PostAsync(requestUri, content);
+            scope.ActuallyDispose();
+
             if (response.StatusCode != expectedStatusCode)
                 throw new DotnetTestAbstractionsFixtureException($"{nameof(GetAsync)} received '{response.StatusCode}' but expected '{expectedStatusCode}'");
 

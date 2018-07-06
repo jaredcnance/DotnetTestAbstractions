@@ -26,23 +26,31 @@ namespace DotnetTestAbstractions.DependencyInjection
                 return _asyncLocalScopes.Value.Last();
             }
 
-            return CreateAmbientScope();
+            return CreateAmbientScope(new Dictionary<Type, Type>());
         }
 
         /// <summary>
         /// Creates a new ambient scope to replace the existing scope.
         /// The existing scope will be disposed.
         /// </summary>
-        public static ServiceScope CreateAmbientScope()
+        public static ServiceScope CreateAmbientScope(Dictionary<Type, Type> ambientScopedRegistrations)
         {
             var existingScopes = _asyncLocalScopes.Value;
             existingScopes?.ForEach(s => s.Dispose());
 
-            var lifetimeScope = _container.BeginLifetimeScope();
-            var scope = new ServiceScope(lifetimeScope);
+            var lifetimeScope = _container.BeginLifetimeScope(b => RegisterAmbientScopedServices(b, ambientScopedRegistrations));
+            var scope = new ServiceScope(lifetimeScope, ambientScopedRegistrations);
             _asyncLocalScopes.Value = new List<ServiceScope>() { scope };
 
             return scope;
+        }
+
+        private static void RegisterAmbientScopedServices(ContainerBuilder b, Dictionary<Type, Type> ambientScopedRegistrations)
+        {
+            foreach (var registration in ambientScopedRegistrations)
+                b.RegisterType(registration.Value)
+                    .As(registration.Key)
+                    .InstancePerLifetimeScope();
         }
 
         /// <summary>
@@ -54,7 +62,12 @@ namespace DotnetTestAbstractions.DependencyInjection
                 throw new InvalidOperationException("Cannot create child scope without an ambient scope. Make sure you have called CreateAmbientScope() first.");
 
             if (_asyncLocalScopes.Value.Count > 1)
-                throw new InvalidOperationException("Cannot create child scope, one already exists. Call dispose on the child scope before creating a new one.");
+            {
+                Console.WriteLine("Disposing Existing Child Scope.");
+                var currentScope = _asyncLocalScopes.Value[1];
+                _asyncLocalScopes.Value.Remove(currentScope);
+                currentScope.ActuallyDispose();
+            }
 
             var parentScope = _asyncLocalScopes.Value.Single();
             var childScope = parentScope.CreateChildScope();
