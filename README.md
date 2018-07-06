@@ -7,6 +7,8 @@
 
 Provides a set of abstractions for improving the performance and DX when writing integration tests.
 
+**Read the blog post [here](https://nance.io/a-better-story-for-asp-net-core-integration-testing/).**
+
 ## Usage
 
 See the [Examples](https://github.com/jaredcnance/DotnetTestAbstractions/tree/master/examples/WebApp.Tests)
