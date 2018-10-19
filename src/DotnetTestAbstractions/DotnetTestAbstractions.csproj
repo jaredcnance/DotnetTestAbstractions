@@ -11,7 +11,6 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(TestHostVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ConfigurationVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(DependencyInjectionVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonVersion)" />

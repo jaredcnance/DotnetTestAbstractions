@@ -1,19 +1,27 @@
 using System;
 using System.Data.Common;
-using System.Data.SqlClient;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
+using DotnetTestAbstractions.DependencyInjection.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DotnetTestAbstractions.DependencyInjection
 {
     public class DbContextInterceptor<TContext> : IServiceInterceptor 
-        where TContext : DbContext
+        where TContext : Microsoft.EntityFrameworkCore.DbContext
     {
         private static bool _databaseIsCreated = false;
         private static object _dbCreatedLock = new object();
         private static AsyncLocal<IDbContextTransaction> _currentTransaction = new AsyncLocal<IDbContextTransaction>();
         private static AsyncLocal<DbConnection> _currentConnection = new AsyncLocal<DbConnection>();
+        private readonly DatabaseProvider _provider;
+
+        public DbContextInterceptor(DatabaseProvider provider = DatabaseProvider.SqlServer)
+        {
+            _provider = provider;
+        }
 
         public object OnResolving(Object service)
         {
@@ -39,9 +47,8 @@ namespace DotnetTestAbstractions.DependencyInjection
             }
             else
             {
-                var options = new DbContextOptionsBuilder<TContext>()
-                    .UseSqlServer((SqlConnection)_currentConnection.Value)
-                    .Options;
+                var optionsBuilder = ConnectionConfiguratorFactory.Create(_provider).ConfigureConnection<TContext>(_currentConnection.Value);
+                var options = optionsBuilder.Options;
 
                 dbContext = (TContext)Activator.CreateInstance(typeof(TContext), options);
             }
