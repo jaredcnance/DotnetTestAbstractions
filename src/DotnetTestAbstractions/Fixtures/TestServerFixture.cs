@@ -6,27 +6,26 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DotnetTestAbstractions.Fixtures
 {
     public class TestServerFixture<TStartup, TContext>
-        : BaseDbContextFixture<TContext>
+        : BaseFixture
         where TStartup : class
         where TContext : DbContext
     {
-        private ServiceScope _testScope;
         private IServiceProvider _services;
         private TestServer _currentServer;
 
         public TestServerFixture()
         {
             SetupScopedServer();
-            SetupDatabase();
+            DbContext = GetService<TContext>();
         }
 
         protected HttpClient Client { get; set; }
         protected TContext DbContext { get; private set; }
-        protected IDbContextTransaction Transaction { get; private set; }
         protected T GetService<T>() => (T)_services.GetService(typeof(T));
 
         /// <summary>
@@ -43,35 +42,21 @@ namespace DotnetTestAbstractions.Fixtures
         {
             _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh, configureBuilder);
             Client = _currentServer.CreateClient();
-            _testScope = AsyncLocalServiceScopeFactory<TStartup>.CreateAmbientScope(GetAmbientTypes());
-            _services = _testScope.ServiceProvider;
+            _services = _currentServer.Host.Services.CreateScope().ServiceProvider;
         }
-
-        protected ServiceScope CreateRequestScope()
-            => AsyncLocalServiceScopeFactory<TStartup>.CreateChildScope();
-
 
         /// <summary>
         /// List of types that when requested should be resolved from the ambient scope
         /// instead of the child scope. These should be interfaces of instances that need to be shared
         /// between the test and the web application.
         /// </summary>
-        protected virtual Dictionary<Type, Type> GetAmbientTypes()
-            => new Dictionary<Type, Type> { { typeof(TContext), typeof(TContext) } };
+        protected virtual List<ServiceDescriptor> GetAmbientTypes()
+            => new List<ServiceDescriptor> { new ServiceDescriptor(typeof(TContext), typeof(TContext), ServiceLifetime.Scoped) };
 
-        private void SetupDatabase()
+        public void Dispose()
         {
-            DbContext = GetService<TContext>();
-            EnsureDatabaseIsCreated(DbContext);
-            Transaction = DbContext.Database.BeginTransaction();
-        }
-
-        public override void Dispose()
-        {
-            Transaction.Rollback();
-            _testScope.ActuallyDispose();
+            DbContext.Database.CurrentTransaction.Rollback();
             Client.Dispose();
-            base.Dispose();
         }
     }
 }

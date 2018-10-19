@@ -24,8 +24,6 @@ namespace WebApp
             _config = config;
         }
 
-        public static IContainer Container { get; private set; }
-
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -34,23 +32,13 @@ namespace WebApp
                     .Options);
 
             services.AddScoped<AppContext>();
-
-            return CreateContainer(services);
-        }
-
-        protected IServiceProvider CreateContainer(IServiceCollection services)
-        {
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.Populate(services);
-            Container = containerBuilder.Build();
-            return new AutofacServiceProvider(Container);
+            return services.BuildServiceProvider();
         }
 
         public void Configure(
             IApplicationBuilder app,
             AppContext context)
         {
-            context.Database.EnsureCreated();
             app.UseMvc();
         }
     }
