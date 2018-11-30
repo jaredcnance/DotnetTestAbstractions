@@ -7,11 +7,8 @@ namespace DotnetTestAbstractions
 {
     public static class IServiceCollectionExtensions
     {
+        [Obsolete("Use ServiceProviderFactory directly")]
         public static IServiceProvider UseAmbientDbConnection<TContext>(this IServiceCollection services)
-            where TContext : DbContext
-        {
-            var serviceScopeFactory = new ServiceScopeFactory(services, new DbContextInterceptor<TContext>());
-            return serviceScopeFactory.ServiceProvider;
-        }
+            where TContext : DbContext => ServiceProviderFactory.CreateServiceProvider<TContext>(services);
     }
 }

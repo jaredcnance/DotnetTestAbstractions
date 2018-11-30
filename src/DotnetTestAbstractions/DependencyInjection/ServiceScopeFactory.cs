@@ -20,5 +20,12 @@ namespace DotnetTestAbstractions.DependencyInjection
             var container = containerBuilder.Build();
             ServiceProvider = new AutofacServiceProvider(container);
         }
+
+        public ServiceScopeFactory(ContainerBuilder containerBuilder, IServiceInterceptor interceptor)
+        {
+            containerBuilder.RegisterModule(new InterceptorModule(interceptor));
+            var container = containerBuilder.Build();
+            ServiceProvider = new AutofacServiceProvider(container);
+        }
     }
 }
