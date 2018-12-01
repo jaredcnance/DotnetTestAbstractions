@@ -79,7 +79,15 @@ namespace DotnetTestAbstractions.DependencyInjection
             
             var dbContextOptions = GetConfiguredDbContextOptions();
             targetCtorArgs.Insert(0, dbContextOptions);
-            return (TContext)Activator.CreateInstance(dbContextType, targetCtorArgs.ToArray());
+            try
+            {
+                return (TContext)Activator.CreateInstance(dbContextType, targetCtorArgs.ToArray());
+            }
+            catch(Exception e)
+            {
+                Logger.Error($"Failed to create instance {dbContextType} with constructor { string.Join(",",targetCtorArgs.Select(a => a.GetType().Name)) }. {e.Message}");
+                throw e;
+            }
         }
 
         // gets DbOptions that are configured to use the existing transaction
@@ -99,6 +107,9 @@ namespace DotnetTestAbstractions.DependencyInjection
             foreach(var param in ctor.GetParameters()) 
             {
                 args = new List<object>();
+
+                if(param.ParameterType == typeof(DbContextOptions<TContext>))
+                    continue;
 
                 var paramInstance = context.ResolveOptional(param.ParameterType);
                 if(paramInstance == null)
