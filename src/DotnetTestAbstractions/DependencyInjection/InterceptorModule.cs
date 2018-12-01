@@ -20,7 +20,7 @@ namespace DotnetTestAbstractions.DependencyInjection
         private void OnComponentActivating(object sender, ActivatingEventArgs<object> e)
         {
             var originalInstance = e.Instance;
-            var newInstance = _interceptor.OnResolving(originalInstance);
+            var newInstance = _interceptor.OnResolving(originalInstance, e.Context);
             if(newInstance != originalInstance) {
                 e.ReplaceInstance(newInstance);
             }

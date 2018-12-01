@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Autofac;
 using DotnetTestAbstractions.DependencyInjection.Data;
+using DotnetTestAbstractions.Fixtures;
+using DotnetTestAbstractions.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -23,37 +27,87 @@ namespace DotnetTestAbstractions.DependencyInjection
             _provider = provider;
         }
 
-        public object OnResolving(Object service)
+        public object OnResolving(Object service, IComponentContext context)
         {
             if(service is TContext dbContext)
-                return SetupDbContext(dbContext);
+                return SetupDbContext(dbContext, context);
 
             return service;
         }
 
-        protected virtual TContext SetupDbContext(TContext dbContext)
+        protected virtual TContext SetupDbContext(TContext dbContext, IComponentContext context)
         {
-            dbContext = EnsureDatabaseConnection(dbContext);
-            EnsureDatabaseIsCreated(dbContext);
-            EnsureTransaction(dbContext);
+            try {
+                dbContext = EnsureDatabaseConnection(dbContext, context);
+                EnsureDatabaseIsCreated(dbContext);
+                EnsureTransaction(dbContext);
+                return dbContext;
+            }
+            catch (Exception e) {
+                Logger.Error($"Something wen wrong While constructing the DbContext. {e.Message}");
+                throw;
+            }
+        }
+
+        protected virtual TContext EnsureDatabaseConnection(TContext dbContext, IComponentContext context) 
+        {
+            // use the pre-existing connection, or create a new DbContext instance and set the connection
+            if(_currentConnection.Value == null)
+                _currentConnection.Value = dbContext.Database.GetDbConnection();
+            else
+                dbContext = ConstructDbContextInstance(context);
+
             return dbContext;
         }
 
-        protected virtual TContext EnsureDatabaseConnection(TContext dbContext) 
+        // TODO: most of this can be cached and should be moved to a factory
+        private TContext ConstructDbContextInstance(IComponentContext context)
         {
-            if(_currentConnection.Value == null)
-            {
-                _currentConnection.Value = dbContext.Database.GetDbConnection();
-            }
-            else
-            {
-                var optionsBuilder = ConnectionConfiguratorFactory.Create(_provider).ConfigureConnection<TContext>(_currentConnection.Value);
-                var options = optionsBuilder.Options;
+            // we need to find a constructor for the DbContext
+            var dbContextType = typeof(TContext);
+            var orderedConstructors = dbContextType.GetConstructors().OrderBy(c => c.GetParameters().Length);
 
-                dbContext = (TContext)Activator.CreateInstance(typeof(TContext), options);
+            List<object> targetCtorArgs = null;
+            foreach(var ctor in orderedConstructors)
+            {
+                if(ShouldUseConstructor(ctor, context, out var args))
+                    targetCtorArgs = args;
             }
 
-            return dbContext;
+            if(targetCtorArgs == null)
+                throw new DotnetTestAbstractionsFixtureException($"Could not locate a valid constructor for {dbContextType}");
+            
+            var dbContextOptions = GetConfiguredDbContextOptions();
+            targetCtorArgs.Insert(0, dbContextOptions);
+            return (TContext)Activator.CreateInstance(dbContextType, targetCtorArgs.ToArray());
+        }
+
+        // gets DbOptions that are configured to use the existing transaction
+        private DbContextOptions GetConfiguredDbContextOptions() 
+            => ConnectionConfiguratorFactory.Create(_provider)
+                .ConfigureConnection<TContext>(_currentConnection.Value)
+                .Options;
+
+        private bool ShouldUseConstructor(ConstructorInfo ctor, IComponentContext context, out List<object> args)
+        {
+            args = null;
+
+            // the Dbcontext MUST have a constructor that accepts DbContextOptions
+            if(ctor.GetParameters().Any(p => p.ParameterType == typeof(DbContextOptions<TContext>)) == false)
+                return false;
+
+            foreach(var param in ctor.GetParameters()) 
+            {
+                args = new List<object>();
+
+                var paramInstance = context.ResolveOptional(param.ParameterType);
+                if(paramInstance == null)
+                    return false;
+
+                args.Add(paramInstance);
+            }
+
+            return true;
         }
 
         protected void EnsureDatabaseIsCreated(DbContext dbContext)

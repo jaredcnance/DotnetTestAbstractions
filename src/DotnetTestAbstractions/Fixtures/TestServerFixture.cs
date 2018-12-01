@@ -38,9 +38,9 @@ namespace DotnetTestAbstractions.Fixtures
         /// <param name="configureBuilder">
         /// Use this to override the default WebHost configuration.
         /// </param>
-        protected void SetupScopedServer(bool forceRefresh = false, Action<WebHostBuilder> configureBuilder = null)
+        protected void SetupScopedServer(bool forceRefresh = false)
         {
-            _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh, configureBuilder);
+            _currentServer = TestServerCache.GetOrCreateServer<TStartup>(forceRefresh);
             Client = _currentServer.CreateClient();
             _services = _currentServer.Host.Services.CreateScope().ServiceProvider;
         }
