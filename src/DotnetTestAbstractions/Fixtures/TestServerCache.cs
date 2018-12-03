@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using DotnetTestAbstractions.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -14,10 +15,16 @@ namespace DotnetTestAbstractions.Fixtures
 
         public static TestServer GetOrCreateServer<TStartup>(bool forceRefresh = false, Action<WebHostBuilder> configureBuilder = null)
         {
+            Logger.Debug("GetOrCreateServer");
             var startupType = typeof(TStartup);
 
             if (_servers.TryGetValue(startupType, out var server) && forceRefresh == false)
+            {
+                Logger.Debug("Using cached server");
                 return server;
+            }
+            
+            Logger.Debug("Creating new server");
 
             var builder = new WebHostBuilder();
 

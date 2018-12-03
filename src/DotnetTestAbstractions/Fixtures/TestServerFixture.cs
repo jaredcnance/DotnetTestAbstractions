@@ -7,11 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using DotnetTestAbstractions.Utilities;
+using DotnetTestAbstractions.Database;
 
 namespace DotnetTestAbstractions.Fixtures
 {
     public class TestServerFixture<TStartup, TContext>
-        : BaseFixture
+        : BaseFixture, IDisposable
         where TStartup : class
         where TContext : DbContext
     {
@@ -55,7 +57,8 @@ namespace DotnetTestAbstractions.Fixtures
 
         public void Dispose()
         {
-            DbContext.Database.CurrentTransaction.Rollback();
+            Logger.Debug("Disposing TestServerFixture");
+            ScopedConnection.Rollback();
             Client.Dispose();
         }
     }
